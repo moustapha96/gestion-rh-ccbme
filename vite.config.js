@@ -51,7 +51,7 @@ export default defineConfig({
   plugins: [react(), VitePWA(pwaConfig), tailwind()],
   define: { "process.env": {} },
    build: {
-    outDir: "../deploy-authentic-page/",
+    outDir: "../deploy-gestion-rh-ccbme/",
     rollupOptions: {
       output: {
         manualChunks: {
