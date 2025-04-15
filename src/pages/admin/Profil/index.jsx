@@ -13,7 +13,8 @@ import { AppContext } from '../../../AppContext'
 
 
 const AdminProfil = () => {
-    const { session } = useAuthContext()
+    const { session, parent } = useAuthContext()
+    console.log(parent)
     const { urlApi } = useContext(AppContext);
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [userInfo, setUserInfo] = useState({
@@ -80,14 +81,48 @@ const AdminProfil = () => {
 
     return (
         <>
-            <AdminBreadcrumb title="Profil" />
+            <AdminBreadcrumb title="Profil" subTitle="Modifier votre profil" />
             <section>
                 <div className="container">
                     <div className="my-6 space-y-6">
                         <div className="grid grid-cols-1">
                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                                <div className="p-6">
+                                    <h2 className="text-2xl font-semibold mb-4">Info Entreprise</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                        <div className="flex items-center">
+                                            <strong className="w-1/3">Nom :</strong>
+                                            <span className="flex items-center">
+                                                {parent.name}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center">
+                                            <strong className="w-1/3">Identifiant :</strong>
+                                            <span className="flex items-center">
+                                                {parent.entreprise_code}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <strong className="w-1/3">Email :</strong>
+                                            <span className="flex items-center">
+                                                {parent.email ? parent.email : 'Non renseigné'}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center">
+                                            <strong className="w-1/3">Téléphone :</strong>
+                                            <span className="flex items-center">
+                                                {parent.phone ? parent.phone : 'Non renseigné'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
 
+                            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div className="p-6">
                                     <h2 className="text-2xl font-semibold mb-4">Profil Utilisateur</h2>
                                     <form onSubmit={handleUpdateUser} className="space-y-4">
@@ -119,6 +154,7 @@ const AdminProfil = () => {
                                                         name="email"
                                                         type="email"
                                                         value={userInfo.email}
+                                                        readOnly
                                                         onChange={handleInputChange}
                                                         className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
@@ -142,7 +178,7 @@ const AdminProfil = () => {
                                             </div>
                                             <div>
                                                 <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Rue
+                                                    Adresse
                                                 </label>
                                                 <div className="relative">
                                                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -166,7 +202,7 @@ const AdminProfil = () => {
                                                         id="country_name"
                                                         name="country_name"
                                                         type="text"
-                                                        value={userInfo.country_name.name}
+                                                        value={userInfo.country_name?.name ?? "Sénégal"}
                                                         onChange={handleInputChange}
                                                         className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
@@ -183,46 +219,17 @@ const AdminProfil = () => {
                                                         name="phone"
                                                         type="tel"
                                                         value={userInfo.phone}
+                                                        readOnly
                                                         onChange={handleInputChange}
                                                         className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
                                             </div>
-                                            <div>
-                                                <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Mobile
-                                                </label>
-                                                <div className="relative">
-                                                    <Smartphone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                                                    <input
-                                                        id="mobile"
-                                                        name="mobile"
-                                                        type="tel"
-                                                        value={userInfo.mobile || ''}
-                                                        onChange={handleInputChange}
-                                                        className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Site Web
-                                                </label>
-                                                <div className="relative">
-                                                    <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                                                    <input
-                                                        id="website"
-                                                        name="website"
-                                                        type="url"
-                                                        value={userInfo.website || ''}
-                                                        onChange={handleInputChange}
-                                                        className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                </div>
-                                            </div>
+
+
                                             <div>
                                                 <label htmlFor="function" className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Fonction
+                                                    Fonction ou poste
                                                 </label>
                                                 <div className="relative">
                                                     <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -236,7 +243,7 @@ const AdminProfil = () => {
                                                     />
                                                 </div>
                                             </div>
-                                            <div>
+                                            {/* <div>
                                                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                                                     Titre
                                                 </label>
@@ -251,7 +258,7 @@ const AdminProfil = () => {
                                                         className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                     />
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
                                         <div className="flex justify-center">
 

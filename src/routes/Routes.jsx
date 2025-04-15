@@ -1,3 +1,77 @@
+// import { useAuthContext } from "@/context";
+// import {
+//   AdminLayout,
+//   AuthLayout,
+//   DefaultLAyout,
+//   LandingLayout,
+// } from "@/layouts";
+// import { Navigate, Route, Routes } from "react-router-dom";
+// import { adminRoutes, authRoutes, gestionRoutes, } from "./index";
+// import GestionLayout from "@/layouts/GestionLayout";
+
+
+// const AllRoutes = (props) => {
+//   const { isAuthenticated, userInfo } = useAuthContext();
+//   console.log(userInfo, isAuthenticated);
+
+//   const ProtectedRoute = ({ children, requiredRole }) => {
+//     if (!isAuthenticated) {
+//       return <Navigate to="/auth/sign-in" replace />;
+//     }
+
+//     if (requiredRole && userInfo.role !== requiredRole) {
+//       const redirectPath = userInfo.role === "main_user" ? "/dashboard" : "/gestion/dashboard";
+//       return <Navigate to={redirectPath} replace />;
+//     }
+
+//     return children;
+//   };
+
+
+//   return (
+//     <Routes>
+
+
+
+//       {adminRoutes.map((route, idx) => (
+//         <Route
+//           path={route.path}
+//           element={
+//             <ProtectedRoute requiredRole="main_user">
+//               <AdminLayout {...props}>{route.element}</AdminLayout>
+//             </ProtectedRoute>
+//           }
+//           key={idx}
+//         />
+//       ))}
+
+//       {gestionRoutes.map((route, idx) => (
+//         <Route
+//           path={route.path}
+//           element={
+//             <ProtectedRoute requiredRole="secondary_user">
+//               <GestionLayout {...props}>{route.element}</GestionLayout>
+//             </ProtectedRoute>
+//           }
+//           key={idx}
+//         />
+//       ))}
+
+
+
+//       {authRoutes.map((route, idx) => (
+//         <Route
+//           path={route.path}
+//           element={<AuthLayout {...props}>{route.element}</AuthLayout>}
+//           key={idx}
+//         />
+//       ))}
+//       <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
+//     </Routes>
+//   );
+// };
+
+// export default AllRoutes;
 import { useAuthContext } from "@/context";
 import {
   AdminLayout,
@@ -6,12 +80,11 @@ import {
   LandingLayout,
 } from "@/layouts";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { adminRoutes, authRoutes, AuthenticPageRoutes, } from "./index";
-
+import { adminRoutes, authRoutes, gestionRoutes } from "./index";
+import GestionLayout from "@/layouts/GestionLayout";
 
 const AllRoutes = (props) => {
   const { isAuthenticated, userInfo } = useAuthContext();
-  console.log(userInfo, isAuthenticated);
 
   const ProtectedRoute = ({ children, requiredRole }) => {
     if (!isAuthenticated) {
@@ -19,45 +92,47 @@ const AllRoutes = (props) => {
     }
 
     if (requiredRole && userInfo.role !== requiredRole) {
-      return <Navigate to="/dashboard" replace />;
+      const redirectPath = userInfo.role === "main_user" ? "/dashboard" : "/gestion/dashboard";
+      return <Navigate to={redirectPath} replace />;
     }
 
     return children;
   };
 
-
   return (
     <Routes>
-
-      {AuthenticPageRoutes.map((route, idx) => (
-        <Route
-          path={route.path}
-          element={<LandingLayout {...props}>{route.element}</LandingLayout>}
-          key={idx}
-        />
-      ))}
-
       {adminRoutes.map((route, idx) => (
         <Route
+          key={idx}
           path={route.path}
           element={
             <ProtectedRoute requiredRole="main_user">
               <AdminLayout {...props}>{route.element}</AdminLayout>
             </ProtectedRoute>
           }
-          key={idx}
         />
       ))}
 
-
+      {gestionRoutes.map((route, idx) => (
+        <Route
+          key={idx}
+          path={route.path}
+          element={
+            <ProtectedRoute requiredRole="secondary_user">
+              <GestionLayout {...props}>{route.element}</GestionLayout>
+            </ProtectedRoute>
+          }
+        />
+      ))}
 
       {authRoutes.map((route, idx) => (
         <Route
+          key={idx}
           path={route.path}
           element={<AuthLayout {...props}>{route.element}</AuthLayout>}
-          key={idx}
         />
       ))}
+
       <Route path="*" element={<Navigate to="/auth/sign-in" replace />} />
     </Routes>
   );

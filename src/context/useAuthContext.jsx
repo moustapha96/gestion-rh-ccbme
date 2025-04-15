@@ -20,9 +20,16 @@ const authSessionKeyCompany = "__CCBME_RH_REACT_AUTH__COMPANY";
 const authSessionKeyUserContext = "__CCBME_RH_REACT_AUTH__USER_CONTEXT";
 const authSessionKeyIsVerified = "__CCBME_RH_REACT_AUTH__IS_VERIFIED";
 const authSessionKeyParentId = "__CCBME_RH_REACT_AUTH__PARET_ID";
+const authSessionKeyAvatar = "__CCBME_RH_REACT_AUTH_AVATAR";
 
 
 export function AuthProvider({ children }) {
+
+  const [profileImage, setProfileImage] = useState(() => {
+    const profilImageFromCookie = getCookie(authSessionKeyAvatar);
+    return profilImageFromCookie ? JSON.parse(profilImageFromCookie) : undefined;
+  });
+
 
   const [parent, setParent] = useState(() => {
     const parentFomCookies = getCookie(authSessionKeyParentId);
@@ -80,6 +87,8 @@ export function AuthProvider({ children }) {
     setIsVerified(data.is_verified);
     setUserContext(data.user_context);
     setParent(data.parent)
+
+    setProfileImage(data.user.avatar);
   };
 
   const removeSession = () => {
@@ -99,7 +108,18 @@ export function AuthProvider({ children }) {
     setIsVerified(undefined);
     setUserContext(undefined);
     setParent(undefined);
+    setProfileImage(undefined);
   };
+
+  const saveProfilImage = useCallback((image) => {
+    setProfileImage(image);
+    setCookie(authSessionKeyAvatar, JSON.stringify(image));
+    setSession(prevSession => ({
+      ...prevSession,
+      avatar: image
+    }));
+  }, []);
+
 
   const logout = useCallback(async () => {
     console.log("Logging out...");
@@ -127,6 +147,7 @@ export function AuthProvider({ children }) {
       value={useMemo(
         () => ({
           session,
+          logout,
           token,
           userInfo,
           parent,
@@ -138,8 +159,11 @@ export function AuthProvider({ children }) {
           isVerified,
           getToken,
           removeSession,
+          profileImage,
+          saveProfilImage,
+          logout,
         }),
-        [session, token, userInfo]
+        [session, token, userInfo, profileImage, saveProfilImage]
       )}
     >
       {children}

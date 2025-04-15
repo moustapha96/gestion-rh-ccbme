@@ -25,42 +25,11 @@ const adminMenu = [
     link: "/admin/clients",
     icon: LuUsers,
   },
-  //  {
-  //   name: "Commandes",
-  //   link: "/admin/commandes",
-  //   icon: LuShoppingBag,
-  // },
-     {
-    name: "Commandes en attentes",
-    link: "/admin/commandes-en-attentes",
-    icon: LuShoppingBag,
-  },
-   {
-    name: "Commandes rejetées",
-    link: "/admin/commandes-rejetees",
-    icon: LuShoppingBag,
-  },
-    {
-    name: "Commandes Approuvées",
-    link: "/admin/commandes-approuvees",
-    icon: LuShoppingBag,
-  },
-  // {
-  //   name: "Precommandes",
-  //   link: "/admin/precommandes",
-  //   icon: LuShoppingBag,
-  // },
   {
     name: "Commandes à Credit",
     link: "/admin/commandes-a-credit",
     icon: LuShoppingBag,
-  },
-  //   {
-  //   name: "Entreprise",
-  //   link: "/admin/configurations",
-  //   icon: LuSettings,
-  // },
-   
+  },   
 ];
 
 const messages = [

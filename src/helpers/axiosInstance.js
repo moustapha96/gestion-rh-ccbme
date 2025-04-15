@@ -3,7 +3,8 @@ import { getCookie } from "cookies-next";
 
 // Créer une instance d'Axios
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8016/api',
+  // baseURL: 'http://localhost:8016/api',
+  baseURL: 'https://orbitcity.sn/api/',
   headers: {
       'Content-Type': 'application/json', 
       'Accept': 'application/json'

@@ -46,7 +46,7 @@ const SignUpInstitut = () => {
 
   const onSubmit = async (data) => {
     console.log(data);
-    const api = "http://localhost:8000/api/create-institut";
+    const api = "http://africatransit.sn:8916/api/create-institut";
     try {
       setLoading(true);
       const response = await fetch(api, {

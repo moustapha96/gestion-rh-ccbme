@@ -17,6 +17,15 @@ import AdminPrecommandes from "../pages/admin/Commandes/AdminPrecommandes";
 import AdminCommandes from "../pages/admin/Commandes/AdminCommandes";
 import AdminCommandeDetails from "../pages/admin/Commandes/AdminCommandeDetails";
 import AdminCommandesCredit from "../pages/admin/Commandes/AdminCommandesCredit";
+import DashboardGestion from "@/pages/gestion/Dashboard";
+import ContactGestion from "@/pages/gestion/Contact";
+import CommandeGestion from "@/pages/gestion/Commande";
+import ClientGestion from "@/pages/gestion/Client";
+import RechercheGestion from "@/pages/gestion/Recherche";
+import GestionCommandeDetails from "@/pages/gestion/Commande/Details";
+import GestionClientDetails from "@/pages/gestion/Client/Details";
+import CommentaireGestion from "@/pages/gestion/Commentaire";
+import GestionProfile from "@/pages/gestion/Profile";
 
 
 const HomePage = lazy(() => import("@/pages/home"));
@@ -36,6 +45,45 @@ const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
 const Logout = lazy(() => import("@/pages/auth/Logout"));
 
+const gestionRoutes = [
+  {
+    path: "/gestion/dashboard",
+    element: <DashboardGestion />,
+  },
+  {
+    path: "/gestion/contacts",
+    element: <ContactGestion />,
+  },
+  {
+    path: "/gestion/commandes",
+    element: <CommandeGestion />,
+  },
+  {
+    path: "/gestion/commandes/:id/details",
+    element: <GestionCommandeDetails />,
+  },
+  {
+    path: "/gestion/clients",
+    element: <ClientGestion />,
+  },
+  {
+    path: "/gestion/clients/:id/details",
+    element: <GestionClientDetails />,
+  },
+  {
+    path: "/gestion/recherches",
+    element: <RechercheGestion />,
+  },
+  {
+    path: "/gestion/commentaires",
+    element: <CommentaireGestion />,
+  },
+  {
+    path: "/gestion/profile",
+    element: <GestionProfile />,
+  }
+]
+
 
 const homeRoutes = [
   {
@@ -45,17 +93,6 @@ const homeRoutes = [
   {
     path: "/home",
     element: <AuthenticPage />,
-  },
-];
-
-const AuthenticPageRoutes = [
-  {
-    path: "/",
-    element: <AuthenticPage />,
-  },
-  {
-    path: "/nouvelle-demande",
-    element: <NouvelleDemandePage />,
   },
 ];
 
@@ -119,6 +156,10 @@ const adminRoutes = [
 
 const authRoutes = [
   {
+    path: "/",
+    element: <SignIn />,
+  },
+  {
     path: "/auth/sign-in",
     element: <SignIn />,
   },
@@ -158,4 +199,4 @@ const authRoutes = [
   // 
 ];
 
-export { adminRoutes, homeRoutes, authRoutes, AuthenticPageRoutes };
+export { adminRoutes, gestionRoutes, homeRoutes, authRoutes };

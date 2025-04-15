@@ -1,6 +1,7 @@
 export * from "./form";
 
 export { default as AdminBreadcrumb } from "./AdminBreadcrumb";
+export { default as GestionBreadcrumb } from "./GestionBreadcrumb";
 export { default as ComponentContainerCard } from "./ComponentContainerCard";
 export { default as Footer } from "./Footer";
 export { default as GlightBox } from "./GlightBox";

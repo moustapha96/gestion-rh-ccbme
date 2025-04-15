@@ -3,46 +3,51 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/icon" href="/logo_192.png" />
+  <link rel="icon" type="image/icon" href="/public/logo_192.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCBM Shop - Gestion entreprise</title>
+  <title>CCBM Shop - Gestion RH</title>
   <style>
     #splash-screen {
       position: fixed;
-      top: 50%;
-      left: 50%;
+      top: 0;
+      left: 0;
       background: white;
       display: flex;
       height: 100%;
       width: 100%;
-      transform: translate(-50%, -50%);
       align-items: center;
       justify-content: center;
       z-index: 9999;
       opacity: 1;
-      transition: all 15s linear;
-      overflow: hidden;
+      transition: opacity 0.5s ease-out;
     }
 
     #splash-screen.remove {
-      animation: fadeout 0.7s forwards;
-      z-index: 0;
-    }
-
-    @keyframes fadeout {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
+      opacity: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 
 <body>
   <div id="root"></div>
-
+  <div id="splash-screen">
+    <img alt="Logo" class="light" src="/public/logo_512.png" style="height: 30%;" />
+  </div>
   <script type="module" src="/src/main"></script>
 
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splashScreen = document.querySelector('#splash-screen');
+        if (splashScreen) {
+          splashScreen.classList.add('remove');
+          setTimeout(() => {
+            splashScreen.style.display = 'none';
+          }, 500);
+        }
+      }, 1000);
+    });
   </script>
 </body>
 

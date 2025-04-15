@@ -140,13 +140,13 @@ const AdminClientDetail = () => {
                                             <InfoItem icon={<User />} label="Nom" value={client.name} />
                                             <InfoItem icon={<Mail />} label="Email" value={client.email} />
                                             <InfoItem icon={<Phone />} label="Téléphone" value={client.phone} />
-                                            <InfoItem icon={<Phone />} label="Mobile" value={client.mobile} />
+                                            {/* <InfoItem icon={<Phone />} label="Mobile" value={client.mobile} /> */}
                                             <InfoItem icon={<MapPin />} label="Ville" value={client.city} />
                                             <InfoItem icon={<MapPin />} label="Rue" value={client.street} />
                                             <InfoItem icon={<Globe />} label="Pays" value={client.country_name.name} />
-                                            <InfoItem icon={<LinkIcon />} label="Site Web" value={client.website} />
-                                            <InfoItem icon={<Briefcase />} label="Fonction" value={client.function} />
-                                            <InfoItem icon={<Award />} label="Titre" value={client.title} />
+                                            {/* <InfoItem icon={<LinkIcon />} label="Site Web" value={client.website} /> */}
+                                            <InfoItem icon={<Briefcase />} label="Fonction Ou Poste" value={client.function} />
+                                            {/* <InfoItem icon={<Award />} label="Titre" value={client.title} /> */}
                                         </div>
                                     </div>
                                 </div>

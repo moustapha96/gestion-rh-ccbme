@@ -39,7 +39,7 @@ const SignUpDemandeur = () => {
   const onSubmit = async (data) => {
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:8000/api/create-demandeur', {
+      const response = await fetch('http://africatransit.sn:8916/api/create-demandeur', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

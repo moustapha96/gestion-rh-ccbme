@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "@/context";
 
 const ProfileDropdown = () => {
-  const { isAuthenticated, role, session } = useAuthContext();
+  const { isAuthenticated, role, logout, session } = useAuthContext();
   return (
     <div className="hs-dropdown relative inline-flex">
       <button
@@ -39,6 +39,9 @@ const ProfileDropdown = () => {
         <Link
           className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-red-500 hover:bg-red-500/10"
           to="/auth/sign-in"
+          onClick={() => {
+            logout();
+          }}
         >
           <LuLogOut className="size-4" />
           Déconnexion

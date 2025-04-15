@@ -22,9 +22,9 @@ const pwaConfig = {
     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, 
   },
   manifest: {
-    name: "ccbme-ge",
-    short_name: "ccbme-ge",
-    description: "CCBME Gestion entreprise",
+    name: "ccbme-grh",
+    short_name: "ccbme-grh",
+    description: "Gestion RH",
     start_url: "/",
     display: "standalone",
     background_color: "#09aef8",

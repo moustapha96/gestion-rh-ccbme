@@ -427,8 +427,12 @@ const AdminCommandeDetails = () => {
                                             </div>
                                         </div>
                                         <div className="mt-4">
+                                            <p className="font-semibold">Montant payer: {order.amount_total - order.amount_residual} FCFA</p>
+                                        </div>
+                                        <div className="mt-4">
                                             <p className="font-semibold">Montant restant à payer: {order.amount_residual.toLocaleString()} FCFA</p>
                                         </div>
+
                                     </div>
                                 </div>
 

@@ -1,6 +1,6 @@
 import { useAuthContext } from "@/context";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -9,11 +9,24 @@ import { AppContext } from "../../../AppContext";
 import axios from "axios";
 
 const useLogin = () => {
+  const { isAuthenticated, userInfo ,saveSession } = useAuthContext();
+  
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { saveSession } = useAuthContext();
   const { urlApi } = useContext(AppContext);
+
+  console.log(isAuthenticated, userInfo);
+
+  useEffect(() => {
+    if (isAuthenticated  && userInfo.role == "secondary_user" && userInfo.email == "alhussein.khouma@ccbm.sn" ) {
+      navigate("/gestion/dashboard");
+    } else if (isAuthenticated && userInfo.role == "main_user") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/auth/sign-in");
+    }
+  }, [isAuthenticated, userInfo]);
 
   const loginFormSchema = yup.object({
     email: yup.string().email("Veuillez entrer un email valide").required("Veuillez entrer votre email"),
@@ -56,22 +69,49 @@ const useLogin = () => {
         return;
       }
       const role = response.user_info.role;
-      if (response.access_token && role == "main_user" && response.parent ) {
-        saveSession(response);
-        toast.success("Connexion réussie. Redirection...", {
-          position: "top-right",
-          duration: 2000,
-        });
-        navigate(redirectUrl);
-        console.log('role', role)
-      } else {
-         toast.error("Vous devez vous connecter en tant que utilisateur principal.", {
-            position: "top-right",
-            duration: 3000,
-          })
-          navigate("/auth/login");
+      const { user_info, access_token, parent } = response;
+
+      console.log("response de la requette ", user_info, access_token, parent)
+      
+      if (!access_token) {
         throw new Error("Token d'accès non trouvé dans la réponse");
       }
+      if (user_info.role === "main_user" && parent) {
+        saveSession(response);
+        toast.success("Connexion réussie. Redirection...", { position: "top-right", duration: 2000 });
+        navigate(redirectUrl);
+      } else if (user_info.role === "secondary_user" && user_info.email === "alhussein.khouma@ccbm.sn") {
+        saveSession(response);
+        toast.success("Connexion réussie. Redirection...", { position: "top-right", duration: 2000 });
+        navigate("/gestion/dashboard");
+      } else {
+        toast.error("Vous devez vous connecter en tant qu'utilisateur principal.", { position: "top-right", duration: 3000 });
+        navigate("/auth/login");
+      }
+    
+    
+      // if (response.access_token && role == "main_user" && response.parent ) {
+      //   saveSession(response);
+      //   toast.success("Connexion réussie. Redirection...", {
+      //     position: "top-right",
+      //     duration: 2000,
+      //   });
+      //   navigate(redirectUrl);
+      // } else if (role === "secondary_user" &&  response.user_info.email === "alhussein.khouma@ccbm.sn") {
+      //   saveSession(response);
+      //   toast.success("Connexion réussie. Redirection...", {
+      //     position: "top-right",
+      //     duration: 2000,
+      //   });
+      //   navigate("/gestion/dashboard");
+      // } else {
+      //    toast.error("Vous devez vous connecter en tant que utilisateur principal.", {
+      //       position: "top-right",
+      //       duration: 3000,
+      //     })
+      //     navigate("/auth/login");
+      //   throw new Error("Token d'accès non trouvé dans la réponse");
+      // }
     } catch (error) {
       if (error.response) {
         console.error('Error response:', error.response.data);
@@ -96,13 +136,6 @@ const useLogin = () => {
           duration: 3000,
         });
       }
-      // else {
-      //   console.error('Error message:', error.message.status);
-      //   toast.error("Une erreur inattendue s'est produite.", {
-      //     position: "top-right",
-      //     duration: 2000,
-      //   });
-      // }
     } finally {
       setLoading(false);
     }

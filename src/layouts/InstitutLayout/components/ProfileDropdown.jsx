@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "@/context";
 
 const ProfileDropdown = () => {
-  const { session, institut } = useAuthContext();
+  const { session, institut, logout } = useAuthContext();
   console.log(session)
   console.log(institut)
   return (
@@ -40,6 +40,9 @@ const ProfileDropdown = () => {
         <Link
           className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-sm text-red-500 hover:bg-red-500/10"
           to="/auth/logout"
+          onClick={() => {
+            logout();
+          }}
         >
           <LuLogOut className="size-4" />
           Déconnexion

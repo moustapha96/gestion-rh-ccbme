@@ -54,6 +54,19 @@ const AdminCommandesApprouvees = () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    const sommeEchoue = (orders) => {
+        let somme = 0;
+        if (orders.first_payment_date > Date.now()) {
+            somme += orders.first_payment_amount;
+        } else if (orders.second_payment_date > Date.now()) {
+            somme += orders.second_payment_amount;
+        } else if (orders.third_payment_date > Date.now()) {
+            somme += orders.third_payment_amount;
+        } else if (orders.fourth_payment_date > Date.now()) {
+            somme += orders.fourth_payment_amount;
+        }
+        return somme;
+    }
     const getStatusColor = (status) => {
         switch (status) {
             case 'approved':
@@ -157,9 +170,11 @@ const AdminCommandesApprouvees = () => {
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Validation</th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Impayé</th>
+                                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Echoue</th>
                                                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                                 </tr>
                                             </thead>
@@ -171,9 +186,7 @@ const AdminCommandesApprouvees = () => {
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {new Date(order.date_order).toLocaleDateString()}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                            {order.amount_total.toLocaleString()} FCFA
-                                                        </td>
+
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <div className="flex items-center">
                                                                 {getStatusIcon(order.state)}
@@ -185,6 +198,15 @@ const AdminCommandesApprouvees = () => {
                                                                 {getStatusIconValidation(order.validation_rh_state)}
                                                                 <span className="ml-2 capitalize">{getStatusTextValidation(order.validation_rh_state)}</span>
                                                             </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {order.amount_total.toLocaleString()} FCFA
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {order.amount_residual.toLocaleString()} FCFA
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {(sommeEchoue(order)).toLocaleString()} FCFA
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                             <Link
