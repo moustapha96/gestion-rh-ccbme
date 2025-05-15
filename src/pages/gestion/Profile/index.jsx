@@ -8,11 +8,10 @@ import { GestionBreadcrumb } from "@/components"
 import { useAuthContext } from '../../../context/useAuthContext'
 import { toast } from 'sonner'
 import { cn } from "@/utils"
-import { getDetailsCompte } from '@/services/entrepriseFunctionService'
+import { getDetailsCompte, updateUserAvatar } from '@/services/entrepriseFunctionService'
 import { AppContext } from '../../../AppContext'
 import avatar from "@/assets/avatar.png";
 
-import { updateUserAvatar } from '@/services/gestionService';
 
 const GestionProfile = () => {
     const { session, parent, saveProfilImage, userInfo: user } = useAuthContext()
@@ -143,6 +142,7 @@ const GestionProfile = () => {
                         autoClose: 5000,
                     });
                     setprofileImg(response.avatar);
+                    saveProfilImage(response.avatar || result)
                 }
             };
             imgReader.readAsDataURL(file);
@@ -177,7 +177,7 @@ const GestionProfile = () => {
                                         </div>
 
                                         <div className="flex items-center">
-                                            <strong className="w-1/3">Identifiant :</strong>
+                                            <strong className="w-1/3">Code Entreprise :</strong>
                                             <span className="flex items-center">
                                                 {parent.entreprise_code}
                                             </span>

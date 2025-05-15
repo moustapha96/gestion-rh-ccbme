@@ -43,15 +43,24 @@ const SignIn = () => {
 
         </div>
 
-        <div className="text-center">
+        <div className="text-center text-sm justify-between ">
+
           <button
             type="submit"
             disabled={loading}
-            className="group mt-5 inline-flex w-full items-center justify-center rounded bg-blueLogo px-6 py-2.5 text-white backdrop-blur-2xl transition-all hover:text-white"
+            className="group mt-5 inline-flex w-2/3 items-center justify-center rounded bg-blueLogo px-6 py-2.5 text-white backdrop-blur-2xl transition-all hover:text-white"
           >
             {loading ? "Chargement..." : "Se connecter"}
             {loading && <LoaderCircle className="ml-2 animate-spin" />}
           </button>
+
+          {/* <p className="mt-4 text-center text-sm text-white ">
+            Vous n'avez pas de compte ?{' '}
+            <Link to={'/auth/sign-up'} className="font-medium text-primary hover:text-primary-dark">
+              {"S'inscrire"}
+            </Link>
+          </p> */}
+
         </div>
       </form>
 

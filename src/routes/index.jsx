@@ -1,12 +1,9 @@
 import { lazy } from "react";
 import AdminConfiguration from "../pages/admin/Configuration";
 
-import SignUpInstitut from "../pages/auth/SignUpInstitut";
-import SignUpDemandeur from "../pages/auth/SignUpDemandeur";
 import AdminProfil from "../pages/admin/Profil";
 import AdminCompte from "../pages/admin/Compte";
-import ActivatedAccount from "../pages/auth/activated";
-import InvitationInstitut from "../pages/auth/InvitationInstitut";
+
 
 import AdminClient from "../pages/admin/Clients";
 import AdminClientDetail from "../pages/admin/Clients/AdminClientDetail";
@@ -32,8 +29,6 @@ const HomePage = lazy(() => import("@/pages/home"));
 
 // landing routes
 const AuthenticPage = lazy(() => import("@/pages/landing/AuthenticPage"));
-const NouvelleDemandePage = lazy(() => import("@/pages/landing/NouvelleDemande"));
-
 
 
 // admin routes
@@ -43,6 +38,7 @@ const SignIn = lazy(() => import("@/pages/auth/SignIn"));
 const SignUp = lazy(() => import("@/pages/auth/SignUp"));
 const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
+const VerifyAccount = lazy(() => import("@/pages/auth/VerifyAccount"));
 const Logout = lazy(() => import("@/pages/auth/Logout"));
 
 const gestionRoutes = [
@@ -163,14 +159,7 @@ const authRoutes = [
     path: "/auth/sign-in",
     element: <SignIn />,
   },
-  {
-    path: "/auth/institut",
-    element: <SignUpInstitut />,
-  },
-  {
-    path: "/auth/demandeur",
-    element: <SignUpDemandeur />,
-  },
+
   {
     path: "/auth/sign-up",
     element: <SignUp />,
@@ -188,15 +177,10 @@ const authRoutes = [
     element: <Logout />,
   },
   {
-    path: "/activate",
-    element: <ActivatedAccount />
-  },
-  {
-    path: "/invitation-institut",
-    element: <InvitationInstitut />
+    path: "/auth/verify-account",
+    element: <VerifyAccount />
   }
 
-  // 
 ];
 
 export { adminRoutes, gestionRoutes, homeRoutes, authRoutes };

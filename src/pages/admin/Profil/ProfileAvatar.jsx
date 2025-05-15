@@ -1,112 +1,62 @@
-
 "use client"
 
-import { useContext, useEffect, useState, useRef } from "react"
-import { User2, MailCheck, MapPin, Phone, Globe, Save, Loader2, Briefcase, Camera } from "lucide-react"
-import { AdminBreadcrumb } from "@/components"
-import { useAuthContext } from "../../../context/useAuthContext"
+import { useState, useRef, useEffect } from "react"
+import { Camera } from "lucide-react"
 import { toast } from "sonner"
-import { cn } from "@/utils"
-import { getDetailsCompte, updateUserAvatar } from "../../../services/entrepriseFunctionService"
-import { AppContext } from "../../../AppContext"
 
-const AdminProfil = () => {
-    const { session, parent, saveUser, saveProfilImage } = useAuthContext()
-    const { urlApi } = useContext(AppContext)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [userInfo, setUserInfo] = useState({
-        id: 0,
-        name: "",
-        city: "",
-        street: null,
-        country_name: { id: 0, name: "" },
-        email: "",
-        website: null,
-        mobile: null,
-        phone: "",
-        function: null,
-        title: null,
-    })
 
-    const [profileImg, setProfileImg] = useState("avatar.png")
-    const fileInputRef = useRef(null)
+const ProfileAvatar = ({
+    userId,
+    urlApi,
+    initialAvatar = "avatar.png",
+    onAvatarChange,
+}) => {
+    const [profileImg, setProfileImg] = useState < string > (initialAvatar)
+    const fileInputRef = useRef < HTMLInputElement > (null)
 
     useEffect(() => {
-        const fetchCompte = async (id) => {
-            try {
-                const res = await getDetailsCompte(id)
-                setUserInfo(res)
-
-                // Charger l'avatar depuis le localStorage
-                const avatarKey = "avatar_" + res.id
-                const savedAvatar = localStorage.getItem(avatarKey)
-                if (savedAvatar) {
-                    setProfileImg(savedAvatar)
-                }
-            } catch (error) {
-                console.error("Erreur lors de la récupération des données du compte:", error)
-                toast.error("Erreur lors de la récupération des données du compte")
-            }
+        const name = "avatar_" + userId
+        const savedAvatar = localStorage.getItem(name)
+        if (savedAvatar) {
+            setProfileImg(savedAvatar)
         }
+    }, [userId])
 
-        if (session.user_info.partner_id) {
-            fetchCompte(session.user_info.partner_id)
-        }
-    }, [session])
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target
-        setUserInfo((prev) => ({
-            ...prev,
-            [name]: name === "country_name" ? { ...prev.country_name, name: value } : value,
-        }))
-    }
-
-    const handleUpdateUser = async (e) => {
-        e.preventDefault()
-        setIsSubmitting(true)
-        try {
-            const response = await fetch(`${urlApi}companies/clients/compte/update`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userInfo),
-            })
-
-            console.log(response)
-            toast.success("Informations de profil mise a jour avec succès")
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour des informations du profil:", error)
-            toast.error("Erreur lors de la mise à jour des informations du profil")
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
-
-    const handleAvatarChange = (e) => {
-        const file = e.target.files[0]
-        const name = "avatar_" + userInfo.id
+    const profileImgChangeHandler = (e) => {
+        const file = e.target.files?.[0]
+        const name = "avatar_" + userId
 
         if (file) {
             const imgReader = new FileReader()
             imgReader.onload = async (event) => {
-                const result = event.target.result
+                const result = event.target?.result
                 setProfileImg(result)
                 localStorage.setItem(name, result)
 
                 try {
-                    const response = await updateUserAvatar(
-                        userInfo.id, result
-                    );
-                    // saveUser(updatedUser)
-                    console.log(response);
-                    toast.success(response.message || "Photo de profil mise à jour avec succès", {
-                        duration: 5000,
+                    const response = await fetch(`${urlApi}companies/clients/compte/update-avatar`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            id: userId,
+                            avatar: result,
+                        }),
                     })
-                    saveProfilImage(response.avatar || result)
-                    setProfileImg(response.avatar || result)
+
+                    const data = await response.json()
+                    if (data.status === "success") {
+                        toast.success(data.message || "Photo de profil mise à jour avec succès", {
+                            duration: 5000,
+                        })
+                        setProfileImg(data.avatar)
+                        if (onAvatarChange) {
+                            onAvatarChange(data.avatar)
+                        }
+                    } else {
+                        throw new Error(data.message || "Erreur lors de la mise à jour de la photo de profil")
+                    }
                 } catch (error) {
                     console.error("Erreur:", error)
                     toast.error("Erreur lors de la mise à jour de la photo de profil")
@@ -119,6 +69,27 @@ const AdminProfil = () => {
         }
     }
 
+    // return (
+    //     <div className="flex justify-center mb-6">
+    //         <div className="relative">
+    //             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
+    //                 <img
+    //                     src={profileImg !== "avatar.png" ? profileImg : "/avatar.png"}
+    //                     alt="Photo de profil"
+    //                     className="w-full h-full object-cover"
+    //                 />
+    //             </div>
+    //             <button
+    //                 type="button"
+    //                 onClick={() => fileInputRef.current?.click()}
+    //                 className="absolute bottom-0 right-0 bg-blueLogo text-white p-2 rounded-full hover:bg-blueClaire transition-colors"
+    //             >
+    //                 <Camera size={20} />
+    //             </button>
+    //             <input type="file" ref={fileInputRef} onChange={profileImgChangeHandler} accept="image/*" className="hidden" />
+    //         </div>
+    //     </div>
+    // )
     return (
         <>
             <AdminBreadcrumb title="Profil" subTitle="Modifier votre profil" />
@@ -155,10 +126,8 @@ const AdminProfil = () => {
                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div className="p-6">
                                     <h2 className="text-2xl font-semibold mb-4">Profil Utilisateur</h2>
-
-                                    {/* Section Avatar */}
-                                    <div className="flex flex-col items-center mb-8">
-                                        <div className="relative group">
+                                    <div className="flex justify-center mb-6">
+                                        <div className="relative">
                                             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
                                                 <img
                                                     src={profileImg !== "avatar.png" ? profileImg : "/avatar.png"}
@@ -166,29 +135,22 @@ const AdminProfil = () => {
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
-
-                                            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => fileInputRef.current.click()}
-                                                    className="text-white p-2 rounded-full hover:bg-blueLogo transition-colors"
-                                                >
-                                                    <Camera size={24} />
-                                                </button>
-                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current.click()}
+                                                className="absolute bottom-0 right-0 bg-blueLogo text-white p-2 rounded-full hover:bg-blueClaire transition-colors"
+                                            >
+                                                <Camera size={20} />
+                                            </button>
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={profileImgChangHandler}
+                                                accept="image/*"
+                                                className="hidden"
+                                            />
                                         </div>
-
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            onChange={handleAvatarChange}
-                                            accept="image/*"
-                                            className="hidden"
-                                        />
-
-                                        <p className="mt-2 text-sm text-gray-500">Cliquez sur la photo pour modifier votre avatar</p>
                                     </div>
-
                                     <form onSubmit={handleUpdateUser} className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
@@ -327,6 +289,22 @@ const AdminProfil = () => {
                                                     />
                                                 </div>
                                             </div>
+                                            {/* <div>
+                                                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Titre
+                                                    </label>
+                                                    <div className="relative">
+                                                        <Award className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                                        <input
+                                                            id="title"
+                                                            name="title"
+                                                            type="text"
+                                                            value={userInfo.title || ''}
+                                                            onChange={handleInputChange}
+                                                            className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        />
+                                                    </div>
+                                                </div> */}
                                         </div>
                                         <div className="flex justify-center">
                                             <button
@@ -356,4 +334,4 @@ const AdminProfil = () => {
     )
 }
 
-export default AdminProfil
+export default ProfileAvatar

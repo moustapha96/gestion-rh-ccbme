@@ -126,25 +126,25 @@ export const getTermeRecherche = async () => {
     }
 }
 
-export const updateUserAvatar = async (id, formData) => {
+// export const updateUserAvatar = async (id, formData) => {
 
-    const partner_id = localStorage.getItem("partner_id");
-    try {
-        const response = await HttpClient.put(
-            `${urlApi}users/avatar/${id}`,
-            { formData },
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        console.log(response);
-        return response.data;
-    } catch (error) {
-        console.error("Erreur lors de la mise à jour de l'avatar", error);
-        throw error;
-    }
-};
+//     const partner_id = localStorage.getItem("partner_id");
+//     try {
+//         const response = await HttpClient.put(
+//             `${urlApi}users/avatar/${id}`,
+//             { formData },
+//             {
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                 },
+//             }
+//         );
+//         console.log(response);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Erreur lors de la mise à jour de l'avatar", error);
+//         throw error;
+//     }
+// };
 
 

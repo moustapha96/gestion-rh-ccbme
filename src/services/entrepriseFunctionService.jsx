@@ -15,6 +15,26 @@ export async function getClientsEntreprise(data) {
     }
 }
 
+export async function updateUserAvatar(id, avatar) {
+    const partner_id = localStorage.getItem("partner_id");
+    try {
+        const response = await HttpClient.put(`${urlApi}users/avatar/${id}`
+            ,
+            { avatar },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'avatar", error);
+        throw error;
+    }
+}
+
 export async function getAllCompanies() {
     try {
         const response = await HttpClient.get(`${urlApi}companies`);
@@ -22,6 +42,47 @@ export async function getAllCompanies() {
     } catch (error) {
         console.error('Erreur lors de la sélection des abonnements:', error);
         throw error;
+    }
+}
+
+export async function setCompanieCompte(data) {
+    try {
+        const response = await HttpClient.post(`${urlApi}companies/clients/set_compte`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la sélection des abonnements:', error);
+        throw error;
+    }
+}
+
+export async function createComptepartenaire(data) {
+    try {
+        const response = await HttpClient.post(`${urlApi}companies/create-compte`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la sélection des abonnements:', error);
+        throw error;
+    }
+}
+export async function verificationComptePartner(data) {
+    try {
+        const response = await HttpClient.post(`${urlApi}companies/otp-verification-compte`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la sélection des abonnements:', error);
+        throw error;
+    }
+}
+
+
+
+export async function requestOTPCode(id) {
+    try {
+        const response = await HttpClient.get(`${urlApi}companies/${id}/otp-resend`);
+        return response.data
+    } catch (error) {
+        console.error("Erreur lors de la demande du code OTP:", error)
+        throw error
     }
 }
 

@@ -78,8 +78,6 @@ const ActivatedAccount = () => {
                 <div className="flex items-start justify-center">
 
                     {resultat && <span className="text-white">{resultat}</span>}
-
-
                 </div>
 
 

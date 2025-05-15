@@ -1,842 +1,3 @@
-// import { useState, useEffect } from "react";
-// import { GestionBreadcrumb } from "@/components";
-
-// import { useAuthContext } from "@/context/useAuthContext";
-// import { Link } from "react-router-dom"
-
-// import { cn } from "@/utils"
-
-
-// import { toast } from "sonner"
-// import { Loader2 } from "lucide-react"
-
-// import { getClientsEntreprise } from "@/services/entrepriseFunctionService"
-// import { setCompteEnable, setValidationAdhesion } from "../../../services/entrepriseFunctionService"
-// import { getClients, toggleClientStatus } from "@/services/gestionService";
-// import { LuChevronLeft, LuChevronRight, LuFilter } from "react-icons/lu";
-
-
-// const ClientGestion = () => {
-//     const { userInfo } = useAuthContext()
-//     const [clients, setClients] = useState([])
-//     const [loading, setLoading] = useState(true)
-//     const [loadingStatus, setLoadingStatus] = useState(false)
-//     const [error, setError] = useState(null)
-//     const [filter, setFilter] = useState("")
-//     const [currentPage, setCurrentPage] = useState(1)
-//     const [itemsPerPage] = useState(5)
-
-//     const [filters, setFilters] = useState({
-//         name: "",
-//         email: "",
-//         function: "",
-//         phone: "",
-//         adhesion: "",
-//     })
-
-//     useEffect(() => {
-//         fetchClients()
-//     }, [])
-
-//     console.log(userInfo, parent)
-//     console.log("userinfo")
-
-//     const fetchClients = async () => {
-//         setLoading(true)
-//         try {
-//             const res = await getClients()
-//             const filtered = res.filter((client) => client.id !== userInfo.id)
-//             setClients(filtered)
-//             console.log(res)
-//             console.log("clients", clients)
-//         } catch (error) {
-//             console.error("Error fetching clients:", error)
-//             setError("Une erreur est survenue lors du chargement des clients.")
-//         } finally {
-//             setLoading(false)
-//         }
-//     }
-
-//     if (loading) return <div className="flex justify-center items-center h-screen">Chargement des clients...</div>
-//     if (error) return <div className="flex justify-center items-center h-screen text-red-500">Erreur: {error}</div>
-
-//     const filteredClients = clients.filter(
-//         (client) =>
-//             (filters.name === "" || client.name && client.name.toLowerCase().includes(filters.name.toLowerCase())) &&
-//             (filters.email === "" || client.email && client.email.toLowerCase().includes(filters.email.toLowerCase())) &&
-//             (filters.function === "" ||
-//                 (client.function && client.function.toLowerCase().includes(filters.function.toLowerCase()))) &&
-//             (filters.phone === "" || client.partner_phone && client.partner_phone.toLowerCase().includes(filters.phone.toLowerCase())) &&
-//             (filters.adhesion === "" || client.adhesion && client.adhesion.toLowerCase() === filters.adhesion.toLowerCase()),
-//     )
-
-//     const indexOfLastItem = currentPage * itemsPerPage
-//     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-//     const currentItems = filteredClients.slice(indexOfFirstItem, indexOfLastItem)
-
-//     const paginate = (pageNumber) => setCurrentPage(pageNumber)
-
-//     const handleFilterChange = (key, value) => {
-//         setFilters((prev) => ({ ...prev, [key]: value }))
-//         setCurrentPage(1)
-
-//         console.log(key, value)
-//     }
-
-//     const handleMultipleFilters = (filterValues) => {
-//         setFilters((prev) => ({ ...prev, ...filterValues }))
-//         setCurrentPage(1)
-//     }
-
-//     const resetFilters = () => {
-//         setFilters({
-//             name: "",
-//             email: "",
-//             function: "",
-//             phone: "",
-//             adhesion: "",
-//         })
-//         setCurrentPage(1)
-//     }
-
-//     const handleStatusChange = async (clientId, newStatus) => {
-//         if (!window.confirm("Confirmer la modification du statut du client ?")) {
-//             return
-//         }
-
-//         const res = await setCompteEnable(clientId)
-//         if (res) {
-//             toast.success("Compte activé avec succes")
-//             fetchClients(userInfo.id)
-//         }
-//         console.log(`Desable client ${clientId}`)
-//     }
-
-//     const handleStatusAdhesion = async (clientId, newStatus) => {
-//         if (!window.confirm("Confirmer la modification du statut du client ?")) {
-//             return
-//         }
-//         setLoadingStatus(true)
-//         const resultat = await toggleClientStatus(clientId, newStatus)
-//         if (resultat) {
-//             toast.success("Opération reussie.", {
-//                 position: "top-right",
-//                 autoClose: 5000,
-//                 theme: "light",
-//             })
-//             fetchClients(userInfo.id, parent.id)
-//         } else {
-//             toast.error("Une erreur s'est produite lors de la modification du statut.", {
-//                 position: "top-right",
-//                 autoClose: 5000,
-//             })
-//         }
-//         setLoadingStatus(false)
-//     }
-
-//     const getAdhesionColor = (status) => {
-//         switch (status) {
-//             case "pending":
-//                 return "bg-yellow-100 text-yellow-800 border-yellow-300"
-//             case "accepted":
-//                 return "bg-green-100 text-green-800 border-green-300"
-//             case "rejected":
-//                 return "bg-red-100 text-red-800 border-red-300"
-//             default:
-//                 return "bg-gray-100 text-gray-800 border-gray-300"
-//         }
-//     }
-
-//     return (
-//         <>
-//             <GestionBreadcrumb title="Gestion des clients" />
-//             <section>
-//                 <div className="container">
-//                     <div className="my-6 space-y-6">
-//                         <div className="grid grid-cols-1">
-//                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-//                                 <div className="p-6">
-//                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par nom"
-//                                                 value={filters.name}
-//                                                 onChange={(e) => handleFilterChange("name", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par email"
-//                                                 value={filters.email}
-//                                                 onChange={(e) => handleFilterChange("email", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par fonction"
-//                                                 value={filters.function}
-//                                                 onChange={(e) => handleFilterChange("function", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par téléphone"
-//                                                 value={filters.phone}
-//                                                 onChange={(e) => handleFilterChange("phone", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <select
-//                                                 value={filters.adhesion}
-//                                                 onChange={(e) => handleFilterChange("adhesion", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
-//                                             >
-//                                                 <option value="">Tous les statuts</option>
-//                                                 <option value="pending">En cours</option>
-//                                                 <option value="accepted">Accepté</option>
-//                                                 <option value="rejected">Rejeté</option>
-//                                             </select>
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="flex justify-between items-center mb-4">
-//                                             <button
-//                                                 onClick={resetFilters}
-//                                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200"
-//                                             >
-//                                                 Réinitialiser les filtres
-//                                             </button>
-//                                         </div>
-//                                     </div>
-
-//                                     <div className="overflow-x-auto">
-//                                         <table className="min-w-full divide-y divide-gray-200">
-//                                             <thead className="bg-gray-50">
-//                                                 <tr>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         ID
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Nom
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Email
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Poste
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Téléphone
-//                                                     </th>
-//                                                     {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th> */}
-//                                                     {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th> */}
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Adhésion
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Actions
-//                                                     </th>
-//                                                 </tr>
-//                                             </thead>
-//                                             <tbody className="bg-white divide-y divide-gray-200">
-//                                                 {currentItems.map((client) => (
-//                                                     <tr key={client.id} className="hover:bg-gray-50 transition-colors duration-200">
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-//                                                             #{client.id}
-//                                                         </td>
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.name}</td>
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.email}</td>
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-//                                                             {client.function ? client.function : "Non défini"}
-//                                                         </td>
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-//                                                             {client.partner_phone}
-//                                                         </td>
-//                                                         {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.country_name}</td> */}
-
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm ">
-//                                                             {loadingStatus ? (
-//                                                                 <Loader2 className="animate-spin mr-2" />
-//                                                             ) : (
-//                                                                 <>
-//                                                                     <select
-//                                                                         className={`block w-full pl-3 pr-10 py-1 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${getAdhesionColor(client.adhesion)}`}
-//                                                                         value={client.adhesion}
-//                                                                         onChange={(e) => handleStatusAdhesion(client.id, e.target.value)}
-//                                                                     >
-//                                                                         {loadingStatus ? (
-//                                                                             <option>
-//                                                                                 {" "}
-//                                                                                 <Loader2 className="animate-spin mr-2" />
-//                                                                             </option>
-//                                                                         ) : (
-//                                                                             <>
-//                                                                                 <option value="pending">En cours</option>
-//                                                                                 <option value="accepted">Accepté</option>
-//                                                                                 <option value="rejected">Rejeté</option>
-//                                                                             </>
-//                                                                         )}
-//                                                                     </select>
-//                                                                 </>
-//                                                             )}
-//                                                         </td>
-//                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex  gap-2 ">
-//                                                             <Link
-//                                                                 to={`/gestion/clients/${client.id}/details`}
-//                                                                 className="text-primary hover:text-blueLogo transition-colors duration-200"
-//                                                             >
-//                                                                 Détails
-//                                                             </Link>
-//                                                         </td>
-//                                                     </tr>
-//                                                 ))}
-//                                             </tbody>
-//                                         </table>
-//                                     </div>
-
-//                                     <div className="flex items-center justify-between mt-4">
-//                                         <div className="text-sm text-gray-700">
-//                                             Affichage de {indexOfFirstItem + 1} à {Math.min(indexOfLastItem, filteredClients.length)} sur{" "}
-//                                             {filteredClients.length} entrées
-//                                         </div>
-//                                         <div className="flex items-center space-x-2">
-//                                             <button
-//                                                 onClick={() => paginate(currentPage - 1)}
-//                                                 disabled={currentPage === 1}
-//                                                 className={cn(
-//                                                     "px-3 py-1 rounded-md",
-//                                                     currentPage === 1
-//                                                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-//                                                         : "bg-white text-gray-700 hover:bg-gray-50",
-//                                                 )}
-//                                             >
-//                                                 <LuChevronLeft className="h-5 w-5" />
-//                                             </button>
-//                                             {Array.from({ length: Math.ceil(filteredClients.length / itemsPerPage) }).map((_, index) => (
-//                                                 <button
-//                                                     key={index}
-//                                                     onClick={() => paginate(index + 1)}
-//                                                     className={cn(
-//                                                         "px-3 py-1 rounded-md",
-//                                                         currentPage === index + 1
-//                                                             ? "bg-primary text-white"
-//                                                             : "bg-white text-gray-700 hover:bg-gray-50",
-//                                                     )}
-//                                                 >
-//                                                     {index + 1}
-//                                                 </button>
-//                                             ))}
-//                                             <button
-//                                                 onClick={() => paginate(currentPage + 1)}
-//                                                 disabled={currentPage === Math.ceil(filteredClients.length / itemsPerPage)}
-//                                                 className={cn(
-//                                                     "px-3 py-1 rounded-md",
-//                                                     currentPage === Math.ceil(filteredClients.length / itemsPerPage)
-//                                                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-//                                                         : "bg-white text-gray-700 hover:bg-gray-50",
-//                                                 )}
-//                                             >
-//                                                 <LuChevronRight className="h-5 w-5" />
-//                                             </button>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-//         </>
-//     )
-// }
-
-// export default ClientGestion
-
-
-
-// "use client"
-
-// import { useState, useEffect } from "react"
-// import { GestionBreadcrumb } from "@/components"
-// import { useAuthContext } from "@/context/useAuthContext"
-// import { Link } from "react-router-dom"
-// import { cn } from "@/utils"
-// import { toast } from "sonner"
-// import { Loader2 } from "lucide-react"
-// import { getClients, toggleClientStatus } from "@/services/gestionService"
-// import { LuChevronLeft, LuChevronRight, LuFilter, LuMoreHorizontal } from "react-icons/lu"
-// import { setCompteEnable } from "@/services/entrepriseFunctionService"
-
-// const ClientGestion = () => {
-//     const { userInfo } = useAuthContext()
-//     const [clients, setClients] = useState([])
-//     const [loading, setLoading] = useState(true)
-//     const [loadingStatus, setLoadingStatus] = useState(false)
-//     const [error, setError] = useState(null)
-//     const [currentPage, setCurrentPage] = useState(1)
-//     const [itemsPerPage] = useState(5)
-
-//     const [filters, setFilters] = useState({
-//         name: "",
-//         email: "",
-//         function: "",
-//         phone: "",
-//         adhesion: "",
-//     })
-
-//     useEffect(() => {
-//         fetchClients()
-//     }, [])
-
-//     const fetchClients = async () => {
-//         setLoading(true)
-//         try {
-//             const res = await getClients()
-//             const filtered = res.filter((client) => client.id !== userInfo.id)
-//             setClients(filtered)
-//         } catch (error) {
-//             console.error("Error fetching clients:", error)
-//             setError("Une erreur est survenue lors du chargement des clients.")
-//         } finally {
-//             setLoading(false)
-//         }
-//     }
-
-//     if (loading) return <div className="flex justify-center items-center h-screen">Chargement des clients...</div>
-//     if (error) return <div className="flex justify-center items-center h-screen text-red-500">Erreur: {error}</div>
-
-//     const filteredClients = clients.filter(
-//         (client) =>
-//             (filters.name === "" || (client.name && client.name.toLowerCase().includes(filters.name.toLowerCase()))) &&
-//             (filters.email === "" || (client.email && client.email.toLowerCase().includes(filters.email.toLowerCase()))) &&
-//             (filters.function === "" ||
-//                 (client.function && client.function.toLowerCase().includes(filters.function.toLowerCase()))) &&
-//             (filters.phone === "" ||
-//                 (client.partner_phone && client.partner_phone.toLowerCase().includes(filters.phone.toLowerCase()))) &&
-//             (filters.adhesion === "" ||
-//                 (client.adhesion && client.adhesion.toLowerCase() === filters.adhesion.toLowerCase())),
-//     )
-
-//     const totalPages = Math.ceil(filteredClients.length / itemsPerPage)
-//     const indexOfLastItem = currentPage * itemsPerPage
-//     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-//     const currentItems = filteredClients.slice(indexOfFirstItem, indexOfLastItem)
-
-//     const paginate = (pageNumber) => {
-//         if (pageNumber < 1 || pageNumber > totalPages) return
-//         setCurrentPage(pageNumber)
-//     }
-
-//     // Génère les boutons de pagination avec un nombre limité de pages affichées
-//     const renderPaginationButtons = () => {
-//         const pageButtons = []
-//         const maxVisibleButtons = 5 // Nombre maximum de boutons à afficher
-
-//         let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2))
-//         const endPage = Math.min(totalPages, startPage + maxVisibleButtons - 1)
-
-//         // Ajuster si on est proche de la fin
-//         if (endPage - startPage + 1 < maxVisibleButtons) {
-//             startPage = Math.max(1, endPage - maxVisibleButtons + 1)
-//         }
-
-//         // Ajouter le premier bouton et éventuellement les points de suspension
-//         if (startPage > 1) {
-//             pageButtons.push(
-//                 <button
-//                     key="1"
-//                     onClick={() => paginate(1)}
-//                     className="px-3 py-1 rounded-md bg-white text-gray-700 hover:bg-gray-50"
-//                 >
-//                     1
-//                 </button>,
-//             )
-
-//             if (startPage > 2) {
-//                 pageButtons.push(
-//                     <span key="start-ellipsis" className="px-2 py-1">
-//                         <LuMoreHorizontal className="h-5 w-5 text-gray-400" />
-//                     </span>,
-//                 )
-//             }
-//         }
-
-//         // Ajouter les boutons de page
-//         for (let i = startPage; i <= endPage; i++) {
-//             pageButtons.push(
-//                 <button
-//                     key={i}
-//                     onClick={() => paginate(i)}
-//                     className={cn(
-//                         "px-3 py-1 rounded-md",
-//                         currentPage === i ? "bg-primary text-white" : "bg-white text-gray-700 hover:bg-gray-50",
-//                     )}
-//                 >
-//                     {i}
-//                 </button>,
-//             )
-//         }
-
-//         // Ajouter les points de suspension et le dernier bouton si nécessaire
-//         if (endPage < totalPages) {
-//             if (endPage < totalPages - 1) {
-//                 pageButtons.push(
-//                     <span key="end-ellipsis" className="px-2 py-1">
-//                         <LuMoreHorizontal className="h-5 w-5 text-gray-400" />
-//                     </span>,
-//                 )
-//             }
-
-//             pageButtons.push(
-//                 <button
-//                     key={totalPages}
-//                     onClick={() => paginate(totalPages)}
-//                     className="px-3 py-1 rounded-md bg-white text-gray-700 hover:bg-gray-50"
-//                 >
-//                     {totalPages}
-//                 </button>,
-//             )
-//         }
-
-//         return pageButtons
-//     }
-
-//     const handleFilterChange = (key, value) => {
-//         setFilters((prev) => ({ ...prev, [key]: value }))
-//         setCurrentPage(1)
-//     }
-
-//     const handleMultipleFilters = (filterValues) => {
-//         setFilters((prev) => ({ ...prev, ...filterValues }))
-//         setCurrentPage(1)
-//     }
-
-//     const resetFilters = () => {
-//         setFilters({
-//             name: "",
-//             email: "",
-//             function: "",
-//             phone: "",
-//             adhesion: "",
-//         })
-//         setCurrentPage(1)
-//     }
-
-//     const handleStatusChange = async (clientId, newStatus) => {
-//         if (!window.confirm("Confirmer la modification du statut du client ?")) {
-//             return
-//         }
-
-//         const res = await setCompteEnable(clientId)
-//         if (res) {
-//             toast.success("Compte activé avec succes")
-//             fetchClients()
-//         }
-//     }
-
-//     const handleStatusAdhesion = async (clientId, newStatus) => {
-//         if (!window.confirm("Confirmer la modification du statut du client ?")) {
-//             return
-//         }
-//         setLoadingStatus(true)
-//         const resultat = await toggleClientStatus(clientId, newStatus)
-//         if (resultat) {
-//             toast.success("Opération reussie.", {
-//                 position: "top-right",
-//                 autoClose: 5000,
-//                 theme: "light",
-//             })
-//             fetchClients()
-//         } else {
-//             toast.error("Une erreur s'est produite lors de la modification du statut.", {
-//                 position: "top-right",
-//                 autoClose: 5000,
-//             })
-//         }
-//         setLoadingStatus(false)
-//     }
-
-//     const getAdhesionColor = (status) => {
-//         switch (status) {
-//             case "pending":
-//                 return "bg-yellow-100 text-yellow-800 border-yellow-300"
-//             case "accepted":
-//                 return "bg-green-100 text-green-800 border-green-300"
-//             case "rejected":
-//                 return "bg-red-100 text-red-800 border-red-300"
-//             default:
-//                 return "bg-gray-100 text-gray-800 border-gray-300"
-//         }
-//     }
-
-//     return (
-//         <>
-//             <GestionBreadcrumb title="Gestion des clients" />
-//             <section>
-//                 <div className="container">
-//                     <div className="my-6 space-y-6">
-//                         <div className="grid grid-cols-1">
-//                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-//                                 <div className="p-6">
-//                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par nom"
-//                                                 value={filters.name}
-//                                                 onChange={(e) => handleFilterChange("name", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par email"
-//                                                 value={filters.email}
-//                                                 onChange={(e) => handleFilterChange("email", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par fonction"
-//                                                 value={filters.function}
-//                                                 onChange={(e) => handleFilterChange("function", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <input
-//                                                 type="text"
-//                                                 placeholder="Filtrer par téléphone"
-//                                                 value={filters.phone}
-//                                                 onChange={(e) => handleFilterChange("phone", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-//                                             />
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="relative">
-//                                             <select
-//                                                 value={filters.adhesion}
-//                                                 onChange={(e) => handleFilterChange("adhesion", e.target.value)}
-//                                                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent appearance-none"
-//                                             >
-//                                                 <option value="">Tous les statuts</option>
-//                                                 <option value="pending">En cours</option>
-//                                                 <option value="accepted">Accepté</option>
-//                                                 <option value="rejected">Rejeté</option>
-//                                             </select>
-//                                             <LuFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-//                                         </div>
-//                                         <div className="flex justify-between items-center mb-4">
-//                                             <button
-//                                                 onClick={resetFilters}
-//                                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200"
-//                                             >
-//                                                 Réinitialiser les filtres
-//                                             </button>
-//                                         </div>
-//                                     </div>
-
-//                                     <div className="overflow-x-auto">
-//                                         <table className="min-w-full divide-y divide-gray-200">
-//                                             <thead className="bg-gray-50">
-//                                                 <tr>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         ID
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Nom
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Email
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Poste
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Téléphone
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Adhésion
-//                                                     </th>
-//                                                     <th
-//                                                         scope="col"
-//                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-//                                                     >
-//                                                         Actions
-//                                                     </th>
-//                                                 </tr>
-//                                             </thead>
-//                                             <tbody className="bg-white divide-y divide-gray-200">
-//                                                 {currentItems.length > 0 ? (
-//                                                     currentItems.map((client) => (
-//                                                         <tr key={client.id} className="hover:bg-gray-50 transition-colors duration-200">
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-//                                                                 #{client.id}
-//                                                             </td>
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.name}</td>
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.email}</td>
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-//                                                                 {client.function ? client.function : "Non défini"}
-//                                                             </td>
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-//                                                                 {client.partner_phone}
-//                                                             </td>
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm ">
-//                                                                 {loadingStatus ? (
-//                                                                     <Loader2 className="animate-spin mr-2" />
-//                                                                 ) : (
-//                                                                     <>
-//                                                                         <select
-//                                                                             className={`block w-full pl-3 pr-10 py-1 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-primary ${getAdhesionColor(client.adhesion)}`}
-//                                                                             value={client.adhesion}
-//                                                                             onChange={(e) => handleStatusAdhesion(client.id, e.target.value)}
-//                                                                         >
-//                                                                             {loadingStatus ? (
-//                                                                                 <option>
-//                                                                                     {" "}
-//                                                                                     <Loader2 className="animate-spin mr-2" />
-//                                                                                 </option>
-//                                                                             ) : (
-//                                                                                 <>
-//                                                                                     <option value="pending">En cours</option>
-//                                                                                     <option value="accepted">Accepté</option>
-//                                                                                     <option value="rejected">Rejeté</option>
-//                                                                                 </>
-//                                                                             )}
-//                                                                         </select>
-//                                                                     </>
-//                                                                 )}
-//                                                             </td>
-//                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
-//                                                                 <Link
-//                                                                     to={`/gestion/clients/${client.id}/details`}
-//                                                                     className="text-primary hover:text-blueLogo transition-colors duration-200"
-//                                                                 >
-//                                                                     Détails
-//                                                                 </Link>
-//                                                             </td>
-//                                                         </tr>
-//                                                     ))
-//                                                 ) : (
-//                                                     <tr>
-//                                                         <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
-//                                                             Aucun client trouvé
-//                                                         </td>
-//                                                     </tr>
-//                                                 )}
-//                                             </tbody>
-//                                         </table>
-//                                     </div>
-
-//                                     {filteredClients.length > 0 && (
-//                                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 gap-4">
-//                                             <div className="text-sm text-gray-700">
-//                                                 Affichage de {filteredClients.length > 0 ? indexOfFirstItem + 1 : 0} à{" "}
-//                                                 {Math.min(indexOfLastItem, filteredClients.length)} sur {filteredClients.length} entrées
-//                                             </div>
-//                                             <div className="flex items-center justify-center sm:justify-end space-x-1">
-//                                                 <button
-//                                                     onClick={() => paginate(currentPage - 1)}
-//                                                     disabled={currentPage === 1}
-//                                                     className={cn(
-//                                                         "px-3 py-1 rounded-md",
-//                                                         currentPage === 1
-//                                                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-//                                                             : "bg-white text-gray-700 hover:bg-gray-50",
-//                                                     )}
-//                                                     aria-label="Page précédente"
-//                                                 >
-//                                                     <LuChevronLeft className="h-5 w-5" />
-//                                                 </button>
-
-//                                                 {renderPaginationButtons()}
-
-//                                                 <button
-//                                                     onClick={() => paginate(currentPage + 1)}
-//                                                     disabled={currentPage === totalPages}
-//                                                     className={cn(
-//                                                         "px-3 py-1 rounded-md",
-//                                                         currentPage === totalPages
-//                                                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-//                                                             : "bg-white text-gray-700 hover:bg-gray-50",
-//                                                     )}
-//                                                     aria-label="Page suivante"
-//                                                 >
-//                                                     <LuChevronRight className="h-5 w-5" />
-//                                                 </button>
-//                                             </div>
-//                                         </div>
-//                                     )}
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-//         </>
-//     )
-// }
-
-// export default ClientGestion
-
-
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -845,10 +6,10 @@ import { useAuthContext } from "@/context/useAuthContext"
 import { Link } from "react-router-dom"
 import { cn } from "@/utils"
 import { toast } from "sonner"
-import { Loader2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
+import { Loader2, ArrowUpDown, ArrowUp, ArrowDown, Plus, X, CheckCircle, XCircle } from "lucide-react"
 import { getClients, toggleClientStatus } from "@/services/gestionService"
 import { LuChevronLeft, LuChevronRight, LuFilter, LuMoreHorizontal } from "react-icons/lu"
-import { setCompteEnable } from "@/services/entrepriseFunctionService"
+import { createComptepartenaire, getAllCompanies, setCompteEnable } from "@/services/entrepriseFunctionService"
 
 const ClientGestion = () => {
     const { userInfo } = useAuthContext()
@@ -859,6 +20,17 @@ const ClientGestion = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(5)
     const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" })
+    const [showAddModal, setShowAddModal] = useState(false)
+    const [newClient, setNewClient] = useState({
+        fullName: "",
+        email: "",
+        phone: "",
+        address: "",
+        password: "",
+        company: "",
+    })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [companies, setCompanies] = useState([])
 
     const [filters, setFilters] = useState({
         name: "",
@@ -870,7 +42,89 @@ const ClientGestion = () => {
 
     useEffect(() => {
         fetchClients()
+        fetchCompanies()
     }, [])
+
+    // Générer un mot de passe aléatoire de 8 caractères
+    const generatePassword = () => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
+        let password = ""
+        for (let i = 0; i < 8; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length))
+        }
+        return password
+    }
+
+    // Ouvrir le modal avec un mot de passe généré
+    const openAddModal = () => {
+        setNewClient({
+            ...newClient,
+            password: generatePassword(),
+        })
+        setShowAddModal(true)
+    }
+
+    // Fermer le modal et réinitialiser le formulaire
+    const closeAddModal = () => {
+        setShowAddModal(false)
+        setNewClient({
+            fullName: "",
+            email: "",
+            phone: "",
+            address: "",
+            password: "",
+            company: "",
+        })
+    }
+
+    // Gérer les changements dans le formulaire
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setNewClient({
+            ...newClient,
+            [name]: value,
+        })
+    }
+
+    // Soumettre le formulaire pour ajouter un client
+    const handleAddClient = async (e) => {
+        e.preventDefault()
+
+        // Validation basique
+        if (!newClient.fullName || !newClient.email || !newClient.phone || !newClient.address) {
+            toast.error("Veuillez remplir tous les champs obligatoires")
+            return
+        }
+
+        setIsSubmitting(true)
+        console.log(newClient)
+        try {
+            // Préparer les données pour l'API
+            const data = {
+                name: newClient.fullName,
+                email: newClient.email,
+                phone: newClient.phone,
+                address: newClient.address,
+                password: newClient.password,
+                parent_id: newClient.company,
+            }
+
+            console.log(data)
+            const res = await createComptepartenaire(data)
+
+            toast.success("Client ajouté avec succès")
+            closeAddModal()
+            fetchClients()
+
+            console.log(res)
+        } catch (error) {
+            console.log("Error adding client:", error.response.data)
+            // toast.error("Une erreur est survenue lors de l'ajout du client")
+            toast.error(error.response.data)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     const fetchClients = async () => {
         setLoading(true)
@@ -883,6 +137,16 @@ const ClientGestion = () => {
             setError("Une erreur est survenue lors du chargement des clients.")
         } finally {
             setLoading(false)
+        }
+    }
+
+    const fetchCompanies = async () => {
+        try {
+            const res = await getAllCompanies()
+            setCompanies(res)
+        } catch (error) {
+            console.error("Error fetching companies:", error)
+            toast.error("Erreur lors du chargement des entreprises")
         }
     }
 
@@ -1110,6 +374,17 @@ const ClientGestion = () => {
                         <div className="grid grid-cols-1">
                             <div className="bg-white shadow-lg rounded-lg overflow-hidden">
                                 <div className="p-6">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <h2 className="text-xl font-semibold text-gray-800">Liste des clients</h2>
+                                        <button
+                                            onClick={openAddModal}
+                                            className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200"
+                                        >
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Ajouter un client
+                                        </button>
+                                    </div>
+
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                         <div className="relative">
                                             <input
@@ -1222,6 +497,12 @@ const ClientGestion = () => {
                                                         scope="col"
                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                     >
+                                                        Vérification
+                                                    </th>
+                                                    <th
+                                                        scope="col"
+                                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                    >
                                                         Actions
                                                     </th>
                                                 </tr>
@@ -1265,6 +546,19 @@ const ClientGestion = () => {
                                                                             )}
                                                                         </select>
                                                                     </>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                                {client.is_verified ? (
+                                                                    <div className="flex items-center text-green-600">
+                                                                        <CheckCircle className="h-4 w-4 mr-1" />
+                                                                        Vérifié
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex items-center text-red-600">
+                                                                        <XCircle className="h-4 w-4 mr-1" />
+                                                                        Non vérifié
+                                                                    </div>
                                                                 )}
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
@@ -1333,10 +627,152 @@ const ClientGestion = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Modal pour ajouter un client */}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl my-8">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h3 className="text-lg font-semibold text-gray-900">Ajouter un nouveau client</h3>
+                            <button onClick={closeAddModal} className="text-gray-400 hover:text-gray-500">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddClient} className="p-6 space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Nom complet <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="fullName"
+                                        name="fullName"
+                                        value={newClient.fullName}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Email <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={newClient.email}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Téléphone <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        name="phone"
+                                        value={newClient.phone}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Compagnie <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        id="company"
+                                        name="company"
+                                        value={newClient.company}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                                        required
+                                    >
+                                        <option value="">Sélectionnez une compagnie</option>
+                                        {companies.map((company) => (
+                                            <option key={company.id} value={company.id}>
+                                                {company.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Adresse <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    id="address"
+                                    name="address"
+                                    value={newClient.address}
+                                    onChange={handleInputChange}
+                                    rows={3}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Mot de passe (généré automatiquement)
+                                </label>
+                                <div className="flex">
+                                    <input
+                                        type="text"
+                                        id="password"
+                                        name="password"
+                                        value={newClient.password}
+                                        onChange={handleInputChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                        readOnly
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setNewClient({ ...newClient, password: generatePassword() })}
+                                        className="ml-2 px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                                    >
+                                        Régénérer
+                                    </button>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Ce mot de passe sera envoyé au client. Il pourra le modifier ultérieurement.
+                                </p>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 pt-4 border-t">
+                                <button
+                                    type="button"
+                                    onClick={closeAddModal}
+                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 flex items-center"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
+                                    Ajouter le client
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </>
     )
 }
 
 export default ClientGestion
-
-

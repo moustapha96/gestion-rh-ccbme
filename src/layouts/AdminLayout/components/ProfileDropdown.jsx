@@ -4,15 +4,19 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "@/context";
 
 const ProfileDropdown = () => {
-  const { isAuthenticated, role, logout, session } = useAuthContext();
+  const { isAuthenticated, role, logout, session, profileImage } = useAuthContext();
+  console.log(session, profileImage)
   return (
     <div className="hs-dropdown relative inline-flex">
+
+
       <button
         id="hs-dropdown-with-header"
         type="button"
         className="hs-dropdown-toggle inline-flex flex-shrink-0 items-center justify-center gap-2 align-middle text-xs font-medium transition-all"
       >
-        <img className="inline-block size-9 rounded-full" src={avatar1} />
+        <img className="inline-block size-9 rounded-full" src={profileImage ? { profileImage } : avatar1} />
+
         <div className="hidden text-start lg:block">
           <p className="text-sm font-bold text-white">{session.user_info.name}</p>
           <p className="mt-1 text-xs font-semibold text-zinc-400">Admin</p>

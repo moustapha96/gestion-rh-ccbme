@@ -1015,18 +1015,18 @@ const AdminCommandesCredit = () => {
                                                     >
                                                         Total
                                                     </th>
-                                                    <th
+                                                    {/* <th
                                                         scope="col"
                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                     >
                                                         Impayé
-                                                    </th>
-                                                    <th
+                                                    </th> */}
+                                                    {/* <th
                                                         scope="col"
                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                     >
                                                         Echoue
-                                                    </th>
+                                                    </th> */}
                                                     <th
                                                         scope="col"
                                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -1063,12 +1063,12 @@ const AdminCommandesCredit = () => {
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {order.amount_total.toLocaleString()} FCFA
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {order.amount_residual.toLocaleString()} FCFA
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {sommeEchoue(order).toLocaleString()} FCFA
-                                                        </td>
+                                                        </td> */}
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                             <Link
                                                                 to={`/admin/commandes/${order.id}/details`}
