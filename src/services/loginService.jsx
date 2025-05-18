@@ -20,11 +20,23 @@ export async function login(email, password) {
         throw error;
     }
 }
+
+export async function newPasswordRh(data) {
+    try {
+        const response = await HttpClient.post(`/companies/new-password`, data)
+        return response.data;
+    } catch (error) {
+        console.error('Erreur lors de la connexion:', error);
+        throw error;
+    }
+}
+
+
 export async function inscription(datas) {
     console.log(datas)
     console.log("datas")
     try {
-        const response = await HttpClient.postWithoutToken(`${api}companies/new_compte`, datas);
+        const response = await HttpClient.postWithoutToken(`${urlApi}companies/new_compte`, datas);
         return response.data;
     } catch (error) {
         console.error('Erreur lors de la connexion:', error);

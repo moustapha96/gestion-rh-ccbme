@@ -156,6 +156,11 @@ const authRoutes = [
     element: <SignIn />,
   },
   {
+    path: "/new-rh",
+    element: <SignIn />,
+  },
+
+  {
     path: "/auth/sign-in",
     element: <SignIn />,
   },
